@@ -1,6 +1,7 @@
 export const updateApplication = (id, applicationData) => {
   console.log(applicationData);
-  return fetch(`http://localhost:8080/applications/update/${id}`, {
+  return fetch(`https://courseworkback.azurewebsites.net/applications/update/${id}`, {
+  // return fetch(`http://localhost:8080/applications/update/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(applicationData),

@@ -1,5 +1,6 @@
 export const deleteApplication = (id) => {
-    return fetch(`http://localhost:8080/applications/delete/${id}`, {
+    return fetch(`https://courseworkback.azurewebsites.net/applications/delete/${id}`, {
+    // return fetch(`http://localhost:8080/applications/delete/${id}`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json'

@@ -11,6 +11,7 @@ import {
   validatePassengerName,
   validateDate,
 } from "../services/Validations";
+import { useTranslation } from 'react-i18next';
 
 const ProSpan = styled("span")({
   display: "inline-block",
@@ -68,6 +69,7 @@ export default function EnterDialog({
       : null
   );
   const [errors, setErrors] = useState({});
+  const { t } = useTranslation();
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -114,11 +116,11 @@ export default function EnterDialog({
   return (
     <Paper elevation={3} style={{ padding: "20px", overflow: "hidden" }}>
       <Typography variant="h3" align="center" color="primary">
-        {isEditing ? "Edit Application" : "Add New Application"}
+        {isEditing ? t('EnterAplication.edit') : t('EnterAplication.add')}
       </Typography>
       <Stack spacing={2}>
         <TextField
-          label="Destination"
+          label={t('destination')}
           variant="standard"
           value={destination}
           onChange={(e) => setDestination(e.target.value)}
@@ -126,7 +128,7 @@ export default function EnterDialog({
           helperText={errors.destination}
         />
         <TextField
-          label="Flight number"
+          label={t('flightNumber')}
           variant="standard"
           value={flightNumber}
           onChange={(e) => setFlightNumber(e.target.value)}
@@ -134,7 +136,7 @@ export default function EnterDialog({
           helperText={errors.flightNumber}
         />
         <TextField
-          label="Passenger name"
+          label={t('passengerName')}
           variant="standard"
           value={passengerName}
           onChange={(e) => setPassengerName(e.target.value)}
@@ -143,10 +145,10 @@ export default function EnterDialog({
         />
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
-            label={<Label componentName="Departure date" valueType="date" />}
+            label={<Label componentName={t('departureDate')} valueType="date" />}
             value={departureDate}
             onChange={(date) => setDepartureDate(date)}
-            minDate={dayjs()} // Ensures that all past dates are disabled
+            minDate={dayjs()}
             renderInput={(params) => (
               <TextField
                 {...params}

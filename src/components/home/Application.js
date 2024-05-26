@@ -23,21 +23,21 @@ import SearchByFlightAndDate from "../services/SearchByFlightAndDate";
 import EnterDialog from "../inputs/EnterApplication";
 import Dialog from "@mui/material/Dialog";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
-export default function ReadApplication() {
+export default function ReadApplication({ setSelectedDestination }) {
   const [applications, setApplication] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [handleSave, setHandleSave] = useState(null);
   const [currentApplication, setCurrentApplication] = useState(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchApplications(setApplication);
   }, []);
 
   const handleAdd = () => {
-    console.log("Add button clicked");
     setCurrentApplication(null);
-    console.log(currentApplication);
     setOpenDialog(true);
     setHandleSave(() => handleAddSave);
   };
@@ -49,9 +49,7 @@ export default function ReadApplication() {
   };
 
   const handleEdit = (application) => {
-    console.log("Edit button clicked");
     setCurrentApplication(application);
-    console.log(currentApplication);
     setOpenDialog(true);
     setHandleSave(() => handleUpdateSave);
   };
@@ -67,9 +65,7 @@ export default function ReadApplication() {
       passengerName: updatedApplication.passengerName,
       departureDate: updatedApplication.departureDate,
     };
-    console.log(updatedData);
-    console.log("Current id: " + updatedApplication.id);
-    updateApplication(updatedApplication.id, updatedApplication).then(() => {
+    updateApplication(updatedApplication.id, updatedData).then(() => {
       fetchApplications(setApplication);
       handleClose();
     });
@@ -82,7 +78,6 @@ export default function ReadApplication() {
       passengerName: addedApplication.passengerName,
       departureDate: addedApplication.departureDate,
     };
-    console.log(addedData);
     addApplication(addedData).then(() => {
       fetchApplications(setApplication);
       handleClose();
@@ -90,7 +85,6 @@ export default function ReadApplication() {
   };
 
   const handleFilterChange = (filter) => {
-    console.log("Selected filter:", filter);
     switch (filter) {
       case "sortByDestination":
         setApplication((prevApps) =>
@@ -146,6 +140,21 @@ export default function ReadApplication() {
     });
   };
 
+  const handleRowClick = (destination) => {
+    setSelectedDestination(destination);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleRowEvent = (event, destination) => {
+    if (
+      event.target.tagName !== "BUTTON" &&
+      event.target.tagName !== "svg" &&
+      event.target.tagName !== "path"
+    ) {
+      handleRowClick(destination);
+    }
+  };
+
   return (
     <TableContainer
       component={Box}
@@ -168,16 +177,16 @@ export default function ReadApplication() {
             <TableRow>
               <TableCell sx={{ fontWeight: "bold" }}>№</TableCell>
               <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                Destination
+                {t("destination")}
               </TableCell>
               <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                Flight number
+                {t("flightNumber")}
               </TableCell>
               <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                Passenger name
+                {t("passengerName")}
               </TableCell>
               <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                Departure date
+                {t("departureDate")}
               </TableCell>
               <TableCell align="right"></TableCell>
               <TableCell align="right"></TableCell>
@@ -188,6 +197,9 @@ export default function ReadApplication() {
               <TableRow
                 key={index}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                onClick={(event) =>
+                  handleRowEvent(event, application.destination)
+                }
               >
                 <TableCell component="th" scope="row">
                   {index + 1}

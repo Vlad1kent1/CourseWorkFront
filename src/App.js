@@ -1,14 +1,16 @@
-import "./App.css";
-import FlightsMapContainer from "./components/home/FlightsMap";
+import React, { useState } from "react";
+import FlightsMapComponent from "./components/home/FlightsMap";
 import AppBar from "./components/home/AppBar";
 import ReadApplication from "./components/home/Application";
 
 function App() {
+  const [selectedDestination, setSelectedDestination] = useState(null);
+
   return (
     <div>
       <AppBar />
-      {/* <FlightsMapContainer /> */}
-      <ReadApplication />
+      <FlightsMapComponent selectedDestination={selectedDestination} />
+      <ReadApplication setSelectedDestination={setSelectedDestination} />
     </div>
   );
 }

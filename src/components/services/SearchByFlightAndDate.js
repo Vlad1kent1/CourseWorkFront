@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
-import { TextField, Button, Box, Stack } from '@mui/material';
-import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { TextField, Button, Box, Stack } from "@mui/material";
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Tooltip from "@mui/material/Tooltip";
+import { useTranslation } from "react-i18next";
 
 const ProSpan = styled("span")({
   display: "inline-block",
@@ -39,35 +40,40 @@ function Label({ componentName, valueType, isProOnly }) {
   return content;
 }
 
-export default function SearchByFlightAndDate ({onSearch}) {
-  const [flightNumber, setFlightNumber] = useState('');
+export default function SearchByFlightAndDate({ onSearch }) {
+  const [flightNumber, setFlightNumber] = useState("");
   const [departureDate, setDepartureDate] = useState(null);
+  const { t } = useTranslation();
 
   const handleClick = () => {
     onSearch({ flightNumber, departureDate });
-    setFlightNumber('');
+    setFlightNumber("");
     setDepartureDate(null);
   };
 
   return (
     <Box display="flex" alignItems="center" gap={2}>
       <TextField
-        label="Flight number"
+        label={t("flightNumber")}
         variant="standard"
         value={flightNumber}
         onChange={(e) => setFlightNumber(e.target.value)}
       />
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
-          label={<Label componentName="Departure date" valueType="date" />}
+          label={<Label componentName={t("departureDate")} valueType="date" />}
           value={departureDate}
           onChange={(date) => setDepartureDate(date)}
           renderInput={(params) => <TextField {...params} />}
         />
       </LocalizationProvider>
-      <Button variant="contained" onClick={handleClick} style={{ height: "max" }}>
-        Search
+      <Button
+        variant="contained"
+        onClick={handleClick}
+        style={{ height: "max" }}
+      >
+        {t("Search.search")}
       </Button>
     </Box>
   );
-};
+}

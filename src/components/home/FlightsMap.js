@@ -1,26 +1,102 @@
-import React from 'react'
-import '@immfly/flights-map'
+import React, { useEffect, useState } from "react";
+import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import { Box, useTheme } from "@mui/material";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import cities from "../../data/cities.json";
 
-class FlightsMapContainer extends React.Component {
-  render () {
-    const flights = [
-      {
-        name: 'V131',
-        origin: { city: 'Paris', latitude: 48.8567, longitude: 2.3510 },
-        destination: { city: 'Toronto', latitude: 43.8163, longitude: -79.4287 },
-        state: 0,
-        color: '#F60'
-      },
-      {
-        name: 'SZ1D',
-        origin: { city: 'Szuć', latitude: 53.502781611608455, longitude: 20.730991641461287 },
-        destination: { city: 'Storuman', latitude: 64.833677697428, longitude: 17.316869897704464 },
-        state: 0,
-        color: '#DA291C'
-      }
-    ]
-    return <flights-map ref={(el) => { el && (el.flights = flights)} } />
+function getCurvePoints(start, end) {
+  const latlngs = [];
+  const numPoints = 100;
+  const deltaLat = (end[0] - start[0]) / numPoints;
+  const deltaLng = (end[1] - start[1]) / numPoints;
+  const dist = Math.sqrt(deltaLat * deltaLat + deltaLng * deltaLng);
+  const amplitude = dist * 0.3;
+
+  for (let i = 0; i <= numPoints; i++) {
+    const lat = start[0] + i * deltaLat;
+    const lng =
+      start[1] + i * deltaLng + Math.sin((i / numPoints) * Math.PI) * amplitude;
+    latlngs.push([lat, lng]);
   }
+  return latlngs;
 }
 
-export default FlightsMapContainer
+function Curve({ positions, color }) {
+  console.log(positions);
+  const map = useMap();
+
+  useEffect(() => {
+    if (positions.length !== 2) return;
+
+    const latlngs = getCurvePoints(positions[0], positions[1]);
+
+    const polyline = L.polyline(latlngs, { color: color || "blue" }).addTo(map);
+
+    return () => {
+      map.removeLayer(polyline);
+    };
+  }, [map, positions, color]);
+
+  return null;
+}
+
+export default function FlightsMapComponent({ selectedDestination }) {
+  const theme = useTheme({
+    palette: {
+      primary: {
+        main: "#2196f3",
+      },
+    },
+  });
+  // const lvivCoordinates = [49.8397, 24.0297];
+  const zhydachivCoordinates = [49.385, 24.144444];
+  const [destinationCoordinates, setDestinationCoordinates] = useState(null);
+
+  const getCityCoordinates = (cityName) => {
+    if (!cityName) return null;
+
+    const city = cities.find(
+      (c) => c.name.toLowerCase() === cityName.toLowerCase()
+    );
+    if (city) {
+      return [parseFloat(city.lat), parseFloat(city.lon)];
+    } else {
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const destinationCityCoordinates = getCityCoordinates(selectedDestination);
+    setDestinationCoordinates(destinationCityCoordinates);
+  }, [selectedDestination]);
+
+  return (
+    <Box
+      style={{
+        height: "60vh",
+        width: "60vw",
+        margin: "50px auto",
+        border: `3px solid ${theme.palette.primary.main}`,
+        borderRadius: "4px",
+      }}
+    >
+      <MapContainer
+        center={zhydachivCoordinates}
+        zoom={3}
+        style={{ height: "100%", width: "100%" }}
+      >
+        <TileLayer
+          attribution='<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        {destinationCoordinates && (
+          <Curve
+            positions={[zhydachivCoordinates, destinationCoordinates]}
+            color="blue"
+          />
+        )}
+      </MapContainer>
+    </Box>
+  );
+}

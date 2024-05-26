@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FormControl, Select, MenuItem, OutlinedInput, Box } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 const ITEM_HEIGHT = 28;
 const ITEM_PADDING_TOP = 5.33;
@@ -11,14 +12,15 @@ const MenuProps = {
   },
 };
 
-const filterOptions = [
-  { value: 'default', label: 'Default' },
-  { value: 'sortByDestination', label: 'By destination' },
-  { value: 'sortByDepartureDate', label: 'By departure date' },
-];
-
 function ApplicationFilterSelect({ onSelectChange }) {
   const [selectedOption, setSelectedOption] = useState('default');
+  const { t } = useTranslation();
+
+  const filterOptions = [
+    { value: 'default', label: t('PlaceHolder.default') },
+    { value: 'sortByDestination', label: t('PlaceHolder.byDestination') },
+    { value: 'sortByDepartureDate', label: t('PlaceHolder.byDepartureDay') },
+  ];
 
   const handleChange = (event) => {
     const { value } = event.target;
@@ -36,7 +38,7 @@ function ApplicationFilterSelect({ onSelectChange }) {
           input={<OutlinedInput />}
           renderValue={(selected) => {
             if (!selected || selected === 'default') {
-              return <>Default</>;
+              return <> {t('PlaceHolder.default')} </>;
             }
 
             const selectedOption = filterOptions.find(option => option.value === selected);
